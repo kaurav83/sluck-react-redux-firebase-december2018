@@ -16,8 +16,9 @@ class Rigister extends Component {
         username: '',
         email: '',
         password: '',
-        passwordConfirm: '',
+        passwordConfirmation: '',
         errors: [],
+        loading: false
     }
 
     isFormValid = () => {
@@ -28,14 +29,15 @@ class Rigister extends Component {
             error = {message: "Fill in all fields"};
             this.setState({
                 errors: errors.concat(error)
-            })
+            });
 
             return false;
         } else if (!this.isPasswordValid(this.state)) {
             error = {message: "Password is invalid"};
+
             this.setState({
                 errors: errors.concat(error)
-            })
+            });
 
             return false;
         } else {
@@ -43,17 +45,19 @@ class Rigister extends Component {
         }
     }
 
-    isFormEmpty = ({username, email, password, passwordConfirm}) => {
-        return  !username.length || 
-                !email.length || 
-                !password.length ||
-                !passwordConfirm.length;
+    isFormEmpty = ({username, email, password, passwordConfirmation}) => {
+        return  (
+                    !username.length || 
+                    !email.length || 
+                    !password.length ||
+                    !passwordConfirmation.length
+                );
     }
 
-    isPasswordValid = ({password, passwordConfirm}) => {
-        if (password.length < 6 || passwordConfirm < 6) {
+    isPasswordValid = ({password, passwordConfirmation}) => {
+        if (password.length < 6 || passwordConfirmation.length < 6) {
             return false;
-        } else if (password !== passwordConfirm) {
+        } else if (password !== passwordConfirmation) {
             return false;
         } else {
             return true;
@@ -72,19 +76,51 @@ class Rigister extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        firebase
-            .auth()
-            .createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then(createdUser => {
-                console.log(createdUser);
-            })
-            .catch(error => console.error(error));
 
-        this.isFormValid();
+        if (this.isFormValid()) {
+            this.setState({
+                errors: [],
+                loading: true
+            });
+        
+
+            firebase
+                .auth()
+                .createUserWithEmailAndPassword(this.state.email, this.state.password)
+                .then(createdUser => {
+                    console.log(createdUser);
+                    this.setState({
+                        loading: false
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    this.setState({
+                        errors: this.state.errors.concat(err),
+                        loading: false,
+                    });
+                });
+        }
+    }
+
+    handleInputError = (errors, inputName) => {
+        return errors.some(error => {
+            return error.message.toLowerCase().includes(inputName)
+        }) ?
+            "error"
+            :
+            ""
     }
 
     render() {
-        const {username, email, password, passwordConfirm, errors} = this.state;
+        const {
+            username, 
+            email, 
+            password, 
+            passwordConfirmation, 
+            errors,
+            loading
+        } = this.state;
         return (
             <Grid textAlign="center" verticalAlign="middle" className="app">
                 <Grid.Column style={{maxWidth: 450}}>
@@ -118,6 +154,7 @@ class Rigister extends Component {
                                 onChange={this.handleChange.bind(this)}
                                 type="email"
                                 value={email}
+                                className={this.handleInputError(errors, 'email')}
                             />
                             <Form.Input
                                 fluid
@@ -128,19 +165,23 @@ class Rigister extends Component {
                                 onChange={this.handleChange.bind(this)}
                                 type="password"
                                 value={password}
+                                className={this.handleInputError(errors, 'password')}
                             />
                             <Form.Input
                                 fluid
-                                name="passwordConfirm"
+                                name="passwordConfirmation"
                                 icon="repeat"
                                 iconPosition="left"
                                 placeholder="Confirm password"
                                 onChange={this.handleChange.bind(this)}
                                 type="password"
-                                value={passwordConfirm}
+                                value={passwordConfirmation}
+                                className={this.handleInputError(errors, 'password')}
                             />
 
                             <Button
+                                disabled={loading}
+                                className={loading ? 'loading' : ''}
                                 color="orange"
                                 fluid
                                 size="large"
