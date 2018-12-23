@@ -16,7 +16,52 @@ class Rigister extends Component {
         username: '',
         email: '',
         password: '',
-        passwordConfirm: ''
+        passwordConfirm: '',
+        errors: [],
+    }
+
+    isFormValid = () => {
+        let errors = [];
+        let error;
+
+        if (this.isFormEmpty(this.state)) {
+            error = {message: "Fill in all fields"};
+            this.setState({
+                errors: errors.concat(error)
+            })
+
+            return false;
+        } else if (!this.isPasswordValid(this.state)) {
+            error = {message: "Password is invalid"};
+            this.setState({
+                errors: errors.concat(error)
+            })
+
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    isFormEmpty = ({username, email, password, passwordConfirm}) => {
+        return  !username.length || 
+                !email.length || 
+                !password.length ||
+                !passwordConfirm.length;
+    }
+
+    isPasswordValid = ({password, passwordConfirm}) => {
+        if (password.length < 6 || passwordConfirm < 6) {
+            return false;
+        } else if (password !== passwordConfirm) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    displayErrors = (errors) => {
+        return errors.map((error, index) => <p key={index} style={{color: "tomato"}}>{error.message}</p>)
     }
 
     handleChange(event) {
@@ -34,10 +79,12 @@ class Rigister extends Component {
                 console.log(createdUser);
             })
             .catch(error => console.error(error));
+
+        this.isFormValid();
     }
 
     render() {
-        const {username, email, password, passwordConfirm} = this.state;
+        const {username, email, password, passwordConfirm, errors} = this.state;
         return (
             <Grid textAlign="center" verticalAlign="middle" className="app">
                 <Grid.Column style={{maxWidth: 450}}>
@@ -100,6 +147,12 @@ class Rigister extends Component {
                             >Submit</Button>
                         </Segment>
                     </Form>
+                    {errors.length > 0 && (
+                        <Message>
+                            <h3>Error</h3>
+                            {this.displayErrors(errors)}
+                        </Message>
+                    )}
                     <Message>
                         Already a user?
                         <Link to="/login">To login</Link>
