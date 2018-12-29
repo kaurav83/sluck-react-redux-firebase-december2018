@@ -11,7 +11,10 @@ const App = (props) => {
     return (
         <Grid column="equal" className="app" style={{backgroundColor: "#eee"}}>
             <ColorPanel />
-            <SidePanel currentUser={props.currentUser.displayName /* 3Й подход получения имени пользователя в выпдающем меню */} />
+            <SidePanel 
+                currentUser={props.currentUser.displayName} 
+                photoURL={props.photoURL}
+            />
             <Grid.Column style={{marginLeft: 320}}>
                 <Messages />
             </Grid.Column>
@@ -24,7 +27,8 @@ const App = (props) => {
 
 const mapStateToProps = state => {
     return {
-        currentUser: state.user.currentUser
+        currentUser: state.user.currentUser,
+        photoURL: state.user.currentUser.photoURL
     };
 }
 

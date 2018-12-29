@@ -31,7 +31,6 @@ class Root extends React.Component {
         })
     }
     render() {
-        console.log(this.props, 'PROPS')
         return this.props.isLoading ? ( <Spinner /> ) : 
                 (<Switch>
                     <Route exact path="/" component={App} />
