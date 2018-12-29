@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Grid, Header, Icon, Dropdown } from 'semantic-ui-react';
+<<<<<<< HEAD
 import firebase from '../../firebase';
+=======
+>>>>>>> 7496efae09c4cddf093987458d740655571a93c6
 
 class UserPanel extends Component {
     dropdownOptions = () => [
@@ -15,6 +18,7 @@ class UserPanel extends Component {
         },
         {
             key: 'signout',
+<<<<<<< HEAD
             text: <span onClick={this.handleSignout}>Sign Out</span>
         }
     ];
@@ -25,6 +29,11 @@ class UserPanel extends Component {
             .signOut()
             .then(() => console.log('signed out!'));
     }
+=======
+            text: <span>Sign Out</span>
+        }
+    ]
+>>>>>>> 7496efae09c4cddf093987458d740655571a93c6
 
     render() {
         return (
